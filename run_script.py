@@ -3,32 +3,33 @@ import subprocess
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset',type=str, default='movielens')  # movielens bookcrossing goodreads
-parser.add_argument('--backbone', type=str, default='DCNv2') # DeepFM AutoInt DCNv2
-parser.add_argument('--llm', type=str, default='tiny-bert') # 'tiny-bert'  'roberta' 'roberta-large'
+parser.add_argument('--dataset', type=str, default='movielens')  # movielens, bookcrossing, goodreads
+parser.add_argument('--backbone', type=str, default='DCNv2')     # DeepFM, AutoInt, DCNv2
+parser.add_argument('--llm', type=str, default='tiny-bert')      # tiny-bert, roberta, roberta-large
 parser.add_argument('--epochs', type=int, default=30)
+# ↓ 추가된 인자들 (기존 코드에서 참조하고 있었으나 정의되어 있지 않던 것들)
+parser.add_argument('--init_method', type=str, default='tcp://localhost:23456')
+parser.add_argument('--train_url', type=str, default='')
 
 add_args = parser.parse_args()
 
 TARGET_PY_FILE = 'pretrain_MaskCTR_ddp.py'
 
-NUM_GPU=8
-
-PORT_ID=15637
-PREFIX = f'python -m torch.distributed.launch --nproc_per_node {NUM_GPU} --master_port {PORT_ID} {TARGET_PY_FILE}'.split(" ")
+# Kaggle에서는 단일 GPU로 실행
+PREFIX = ['python', TARGET_PY_FILE]
 
 if add_args.llm == 'tiny-bert':
-    MIXED_PRECISION=False # no need mixed
+    MIXED_PRECISION = False
     batch_size = 128
 elif add_args.llm == 'roberta':
-    MIXED_PRECISION=True
+    MIXED_PRECISION = True
     batch_size = 64
 elif add_args.llm == 'roberta-large':
-    MIXED_PRECISION=True
+    MIXED_PRECISION = True
     batch_size = 16
-    
-SAMPLE=False
-            
+
+SAMPLE = False
+
 for EPOCHS in [add_args.epochs]:
     for BS in [batch_size]:
         for DATASET in [add_args.dataset]:
@@ -39,8 +40,6 @@ for EPOCHS in [add_args.epochs]:
                             for BACKBONE in [add_args.backbone]:
                                 for USE_ATTENTION in [True]:
                                     subprocess.run(PREFIX + [
-                                        f'--init_method={add_args.init_method}',
-                                        f'--train_url={add_args.train_url}',
                                         f'--backbone={BACKBONE}',
                                         f'--temperature={TEM}',
                                         f'--use_mfm={USE_MFM}',
@@ -54,4 +53,3 @@ for EPOCHS in [add_args.epochs]:
                                         f'--llm={add_args.llm}',
                                         f'--use_attention={USE_ATTENTION}'
                                     ])
-
