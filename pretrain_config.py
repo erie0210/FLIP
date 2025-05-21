@@ -61,16 +61,16 @@ def create_parser():
     args.meta_path = args.data_path + 'meta.json'
 
     if args.llm == 'tiny-bert':
-        args.text_encoder_model = args.load_prefix_path+"pretrained_models/tiny-bert-4l-en/"
-        args.text_tokenizer = args.load_prefix_path+"pretrained_models/tiny-bert-4l-en/"
+        args.text_encoder_model = args.load_prefix_path+"pretrained_models/tiny-bert-4l-en"
+        args.text_tokenizer = args.load_prefix_path+"pretrained_models/tiny-bert-4l-en"
         args.text_embedding_dim = 312
     elif args.llm == 'roberta':
-        args.text_encoder_model = args.load_prefix_path+"pretrained_models/roberta-base/"
-        args.text_tokenizer = args.load_prefix_path+"pretrained_models/roberta-base/"
+        args.text_encoder_model = args.load_prefix_path+"pretrained_models/roberta-base"
+        args.text_tokenizer = args.load_prefix_path+"pretrained_models/roberta-base"
         args.text_embedding_dim = 768
     elif args.llm == 'roberta-large':
-        args.text_encoder_model = args.load_prefix_path+"pretrained_models/roberta-large/"
-        args.text_tokenizer = args.load_prefix_path+"pretrained_models/roberta-large/"
+        args.text_encoder_model = args.load_prefix_path+"pretrained_models/roberta-large"
+        args.text_tokenizer = args.load_prefix_path+"pretrained_models/roberta-large"
         args.text_embedding_dim = 1024
 
     args.sample_ration = 0.01
